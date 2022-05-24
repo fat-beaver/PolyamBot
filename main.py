@@ -35,12 +35,14 @@ async def process_command(message):
     split_message = message.content.split(" ")
     # say hello back if someone says hello to the bot
     if split_message[1].lower() == "hello":
+        print("I was greeted by " + get_name(message.author))
         return_message = "Hello " + get_name(message.author) + "!"
         await message.channel.send(return_message)
         return
 
     # say hello to someone else when asked
     if split_message[1].lower() == "greet":
+        print("I was asked to greet someone by " + get_name(message.author))
         return_message = "You need to ping a user to greet"
         if len(message.mentions) != 0:
             return_message = "Hello " + get_name(message.mentions[0]) + "!"
@@ -50,12 +52,14 @@ async def process_command(message):
 
     # respond if someone thanks polybot
     if split_message[1].lower() == "thanks":
+        print("I was thanked by " + get_name(message.author))
         return_message = "You're welcome " + get_name(message.author) + " <3"
         await message.channel.send(return_message)
         return
 
     # add a potential relationship or confirm one
     if split_message[1] == "add":
+        print("I was asked to add a relationship by " + get_name(message.author))
         if split_message[2].lower() == "qpp" \
                 or split_message[2].lower() == "fwb" \
                 or split_message[2].lower() == "partner":
