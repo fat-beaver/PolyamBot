@@ -2,3 +2,4 @@
 /venv/
 token.txt
 *.db
+/graphviz_output/
