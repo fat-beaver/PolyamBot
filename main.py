@@ -22,11 +22,11 @@ async def on_message(message):
     if message.author == client.user:
         return
 
-    if message.content.startswith(">polybot"):
+    if message.content.lower().startswith(">polybot"):
         await process_command(message)
 
 
-# process a command, assuming it starts with /polybot
+# process a command, assuming it starts with >polybot
 async def process_command(message):
     split_message = message.content.split(" ")
     # say hello back if someone says hello to the bot
@@ -37,7 +37,7 @@ async def process_command(message):
         return
 
     # say hello to someone else when asked
-    if split_message[1].lower() == "greet":
+    elif split_message[1].lower() == "greet":
         print("I was asked to greet someone by " + get_name(message.author))
         return_message = "You need to ping a user to greet"
         if len(message.mentions) != 0:
@@ -47,14 +47,22 @@ async def process_command(message):
         return
 
     # respond if someone thanks polybot
-    if split_message[1].lower() == "thanks":
+    elif split_message[1].lower() == "thanks":
         print("I was thanked by " + get_name(message.author))
         return_message = "You're welcome " + get_name(message.author) + " <3"
         await message.channel.send(return_message)
         return
 
+    elif split_message[1].lower() == "help":
+        print(get_name(message.author) + " asked me for help")
+        return_message = ""
+        help_file = open("help_message.txt", "r").readlines()
+        for line in help_file:
+            return_message += line
+        await message.channel.send(return_message)
+
     # add a potential relationship or confirm one
-    if split_message[1] == "add":
+    elif split_message[1].lower() == "add":
         print("I was asked to add a relationship by " + get_name(message.author))
         if split_message[2].lower() in relationship_types:
             return_message = await add_relationship(message, split_message[2].lower())
@@ -63,17 +71,17 @@ async def process_command(message):
             return_message = "You need to include a valid relationship type, these are currently QPP, FWB, and partner"
             await message.channel.send(return_message)
 
-    if split_message[1] == "status":
+    elif split_message[1].lower() == "status":
         print("I was asked for the relationship status of " + get_name(message.author))
         return_message = await relationship_status(message)
         await message.channel.send(return_message)
 
-    if split_message[1] == "remove":
+    elif split_message[1].lower() == "remove":
         print("I was asked to remove a relationship by " + get_name(message.author))
         return_message = await remove_relationship(message)
         await message.channel.send(return_message)
 
-    if split_message[1] == "display":
+    elif split_message[1].lower() == "display":
         print("I was asked to display the polycule of " + get_name(message.author))
         polycule_image = await display_polycule(message)
         await message.channel.send("Here is " + get_name(message.author) + "\'s polycule", file=polycule_image)
@@ -193,7 +201,7 @@ async def remove_relationship(message):
 
     # check for a confirmed relationship
     for relationship_type in relationship_types:
-        if check_relationship(relationship_type, asker, asked, 1):
+        if await check_relationship(relationship_type, asker, asked, 1):
             cur.execute("DELETE FROM {} WHERE asker = ? AND asked = ?".format(relationship_type),
                         (asker.id, asked.id))
             cur.execute("DELETE FROM {} WHERE asker = ? AND asked = ?".format(relationship_type),
@@ -203,7 +211,7 @@ async def remove_relationship(message):
             return get_name(asked) + " is no longer your " + relationship_type
     # check if either person has asked to be in a relationship with the other
     for relationship_type in relationship_types:
-        if check_relationship(relationship_type, asker, asked, 0):
+        if await check_relationship(relationship_type, asker, asked, 0):
             cur.execute("DELETE FROM {} WHERE asker = ? AND asked = ?".format(relationship_type),
                         (asker.id, asked.id))
             cur.execute("DELETE FROM {} WHERE asker = ? AND asked = ?".format(relationship_type),
@@ -223,7 +231,7 @@ async def display_polycule(message):
 
     asker = message.author
     for relationship_type in relationship_types:
-        cur.execute("SELECT * FROM {} WHERE asker = ? OR asked = ?".format(relationship_type), (asker.id, asker.id))
+        cur.execute("SELECT * FROM {}".format(relationship_type))
         relationships_to_add = cur.fetchall()
         for relationship in relationships_to_add:
             raw_relationships.append({"relationship": relationship, "type": relationship_type})
@@ -241,22 +249,29 @@ async def display_polycule(message):
             relationships.append(relationship)
 
     # create an array for the people in the polycule
-    people = []
+    people = [asker]
+    for i in range(len(relationships)):
+        for relationship in relationships:
+            if people.__contains__(relationship.get("asker")) and not people.__contains__(relationship.get("asked")):
+                people.append(relationship.get("asked"))
+            if people.__contains__(relationship.get("asked")) and not people.__contains__(relationship.get("asker")):
+                people.append(relationship.get("asker"))
+
+    polycule_relationships = []
     for relationship in relationships:
-        if relationship.get("asker") not in people:
-            people.append(relationship.get("asker"))
-        if relationship.get("asked") not in people:
-            people.append(relationship.get("asked"))
+        if people.__contains__(relationship.get("asker")) and people.__contains__(relationship.get("asked")):
+            polycule_relationships.append(relationship)
 
     # add each person as a node
     polycule = graphviz.Graph(comment=get_name(asker) + "\'s Polycule", format="png", directory="graphviz_output",
                               renderer="cairo")
     for person in people:
-        polycule.node(str(person.id), str(person.id))
+        polycule.node(person.name, person.name)
 
     # add each relationship as an edge
-    for relationship in relationships:
-        polycule.edge(str(relationship.get("asker").id), str(relationship.get("asked").id))
+    for relationship in polycule_relationships:
+        print(str(relationship.get("asker")) + " " + str(relationship.get("asked")))
+        polycule.edge(get_name(relationship.get("asker")), get_name(relationship.get("asked")))
 
     # use the time that the rendering starts as the filename because this is effectively unique
     rendered_at = str(time.time_ns())
@@ -277,7 +292,7 @@ async def get_user_from_id(user_id):
 
 
 def get_name(user):
-    if user.nick is not None:
+    if hasattr(user, "nick") and user.nick is not None:
         return user.nick
     else:
         return user.name

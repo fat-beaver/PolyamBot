@@ -1,0 +1,32 @@
+__**hello**__
+    syntax:
+        `>polybot hello`
+    say hello to polybot
+__**thanks**__
+    syntax:
+        `>polybot thanks`
+    thank polybot for doing such a good job!
+__**help**__
+    syntax:
+        `>polybot help`
+    display this help message
+__**greet**__
+    syntax:
+        `>polybot greet [ping]`
+    ask polybot to greet a user you ping
+__**add**__
+    syntax:
+        `>polybot add [relationship type] [ping]`
+    add a user to a relationship, used for requesting and confirming relationships. Current relationship types are QPP, FWB, and partner
+__**status**__
+    syntax:
+        `>polybot status [ping]`
+    check your relationship status with a person
+__**remove**__
+    syntax:
+        `>polybot remove [ping]`
+    remove a relationship with a person
+__**display**__
+    syntax:
+        `>polybot display`
+    display your polycule
