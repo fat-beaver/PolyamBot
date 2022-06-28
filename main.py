@@ -36,7 +36,7 @@ async def process_command(message):
         await message.channel.send(return_message)
         return
     # respond to someone hugging polybot
-    elif split_message[1].lower() == "hello":
+    elif split_message[1].lower() == "hug":
         print("I was hugged by " + get_name(message.author))
         return_message = "Thank you for the hug " + get_name(message.author) + " I would love to hug you back but " \
                                                                                "sadly I am only a robot :( "
