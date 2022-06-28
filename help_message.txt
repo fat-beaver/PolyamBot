@@ -2,6 +2,10 @@ __**hello**__
     syntax:
         `>polybot hello`
     say hello to polybot
+__**hug**__
+    syntax:
+        `>polybot hug`
+    give polybot a hug
 __**thanks**__
     syntax:
         `>polybot thanks`

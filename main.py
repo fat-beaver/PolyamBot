@@ -18,7 +18,7 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
-    # check that this message wasn't sent by the bot
+    # check that this message wasn't sent by polybot
     if message.author == client.user:
         return
 
@@ -26,7 +26,7 @@ async def on_message(message):
         await process_command(message)
 
 
-# process a command, assuming it starts with >polybot
+# process a command, if it starts with >polybot
 async def process_command(message):
     split_message = message.content.split(" ")
     # say hello back if someone says hello to the bot
@@ -35,7 +35,13 @@ async def process_command(message):
         return_message = "Hello " + get_name(message.author) + "!"
         await message.channel.send(return_message)
         return
-
+    # respond to someone hugging polybot
+    elif split_message[1].lower() == "hello":
+        print("I was hugged by " + get_name(message.author))
+        return_message = "Thank you for the hug " + get_name(message.author) + "I would love to hug you back but " \
+                                                                               "sadly I am only a robot :( "
+        await message.channel.send(return_message)
+        return
     # say hello to someone else when asked
     elif split_message[1].lower() == "greet":
         print("I was asked to greet someone by " + get_name(message.author))
@@ -45,7 +51,6 @@ async def process_command(message):
 
         await message.channel.send(return_message)
         return
-
     # respond if someone thanks polybot
     elif split_message[1].lower() == "thanks":
         print("I was thanked by " + get_name(message.author))
