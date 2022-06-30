@@ -143,11 +143,11 @@ async def relationship_status(message):
 
     # check if a confirmed relationship exists
     for relationship_type in relationship_types:
-        if check_relationship(relationship_type, asker, asked, 1):
+        if await check_relationship(relationship_type, asker, asked, 1):
             return get_name(asked) + " is your " + relationship_type
     # check if either person has asked to be in a relationship with the other
     for relationship_type in relationship_types:
-        if check_relationship(relationship_type, asker, asked, 0):
+        if await check_relationship(relationship_type, asker, asked, 0):
             # connect to database
             connection = sqlite3.connect(database_name)
             cur = connection.cursor()
