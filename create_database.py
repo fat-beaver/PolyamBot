@@ -1,6 +1,6 @@
 import sqlite3
 
-connection = sqlite3.connect("polybot.db")
+connection = sqlite3.connect("polyambot.db")
 cur = connection.cursor()
 
 cur.execute("CREATE TABLE qpr (asker numeric, asked numeric, confirmed numeric)")

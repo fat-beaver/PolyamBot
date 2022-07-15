@@ -4,7 +4,7 @@ import sqlite3
 import graphviz
 
 client = discord.Client()
-database_name = "polybot.db"
+database_name = "polyambot.db"
 relationship_types = ["qpp", "fwb", "partner"]
 
 intents = discord.Intents.default()
@@ -18,15 +18,15 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
-    # check that this message wasn't sent by polybot
+    # check that this message wasn't sent by polyambot
     if message.author == client.user:
         return
 
-    if message.content.lower().startswith(">polybot"):
+    if message.content.lower().startswith(">polyambot"):
         await process_command(message)
 
 
-# process a command, if it starts with >polybot
+# process a command, if it starts with >polyambot
 async def process_command(message):
     split_message = message.content.split(" ")
     # say hello back if someone says hello to the bot
@@ -35,7 +35,7 @@ async def process_command(message):
         return_message = "Hello " + get_name(message.author) + "!"
         await message.channel.send(return_message)
         return
-    # respond to someone hugging polybot
+    # respond to someone hugging polyambot
     elif split_message[1].lower() == "hug":
         print("I was hugged by " + get_name(message.author))
         return_message = "Thank you for the hug " + get_name(message.author) + " I would love to hug you back but " \
@@ -51,7 +51,7 @@ async def process_command(message):
 
         await message.channel.send(return_message)
         return
-    # respond if someone thanks polybot
+    # respond if someone thanks polyambot
     elif split_message[1].lower() == "thanks":
         print("I was thanked by " + get_name(message.author))
         return_message = "You're welcome " + get_name(message.author) + " <3"
