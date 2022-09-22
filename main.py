@@ -268,8 +268,7 @@ async def display_polycule(message):
             polycule_relationships.append(relationship)
 
     # add each person as a node
-    polycule = graphviz.Graph(comment=get_name(asker) + "\'s Polycule", format="png", directory="graphviz_output",
-                              renderer="cairo")
+    polycule = graphviz.Graph(comment=get_name(asker) + "\'s Polycule", format="png", directory="graphviz_output")
     for person in people:
         polycule.node(person.name, person.name)
 
@@ -282,7 +281,7 @@ async def display_polycule(message):
     rendered_at = str(time.time_ns())
     polycule.filename = rendered_at
     polycule.render(cleanup=True)
-    return discord.File("graphviz_output/" + rendered_at + ".cairo.png")
+    return discord.File("graphviz_output/" + rendered_at + ".png")
 
 
 async def get_user_from_id(user_id):
